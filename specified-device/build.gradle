@@ -1,0 +1,9 @@
+apply plugin: 'org.springframework.boot'
+
+dependencies {
+    compile project(":shared")
+
+    compile("com.alibaba:fastjson")
+
+    compile "org.springframework.boot:spring-boot-starter-web"
+}

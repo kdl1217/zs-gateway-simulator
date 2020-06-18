@@ -1,0 +1,4 @@
+rootProject.name = 'zs-gateway-simulator'
+include 'shared'
+include 'specified-device'
+
