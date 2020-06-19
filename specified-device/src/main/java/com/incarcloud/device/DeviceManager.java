@@ -41,33 +41,49 @@ public class DeviceManager {
     public void init() {
         log.info("init device information ...");
 
-        deviceMap.put("YK001912D4",new DeviceInfo("863576043319974", "YK001912D4", "LVGEN56A8JG257045")) ;
+        deviceMap.put("YK001912D4", new DeviceInfo("863576043319974", "YK001912D4", "LVGEN56A8JG257045"));
     }
 
     /**
      * 初始化TBox数据包创建工厂
      */
-    public DeviceMessageFactory deviceMessageFactory = DeviceMessageFactory.getInstance() ;
+    private DeviceMessageFactory deviceMessageFactory = DeviceMessageFactory.getInstance();
 
     /**
      * 设备集合信息
      */
-    public Map<String, DeviceInfo> deviceMap = new ConcurrentHashMap<>();
+    private Map<String, DeviceInfo> deviceMap = new ConcurrentHashMap<>();
+
+    public Map<String, DeviceInfo> getDeviceMap() {
+        return deviceMap;
+    }
 
     /**
      * 通道集合
      */
-    public Map<String, Socket> socketMap = new ConcurrentHashMap<>();
+    private Map<String, Socket> socketMap = new ConcurrentHashMap<>();
+
+    public Map<String, Socket> getSocketMap() {
+        return socketMap;
+    }
 
     /**
      * 设备发送次数
      */
-    public Map<String, Integer> indexMap = new ConcurrentHashMap<>();
+    private Map<String, Integer> indexMap = new ConcurrentHashMap<>();
+
+    public Map<String, Integer> getIndexMap() {
+        return indexMap;
+    }
 
     /**
      * 下发的433密钥
      */
-    public Map<String, String> secretMap = new ConcurrentHashMap<>();
+    private Map<String, String> secretMap = new ConcurrentHashMap<>();
+
+    public Map<String, String> getSecretMap() {
+        return secretMap;
+    }
 
     /**
      * Socket通道发送数据
@@ -77,15 +93,15 @@ public class DeviceManager {
     public void sendMsg(String deviceId, byte[] bytes) {
         try {
             Socket socket = socketMap.get(deviceId);
-            if (null == socket || !socket.isConnected()){
+            if (null == socket || !socket.isConnected()) {
                 socket = new Socket(serverAddress, serverPort);
-                socketMap.put(deviceId, socket) ;
+                socketMap.put(deviceId, socket);
             }
             OutputStream mSocketOut = socket.getOutputStream();
             mSocketOut.write(bytes);
             mSocketOut.flush();
             log.info("send deviceId : {} -->  {}", deviceId, HexStringUtil.toHexString(bytes));
-        }catch (Exception e){
+        } catch (Exception e) {
             log.info("retry connect : {}", deviceId);
             retrySendMsg(deviceId, bytes, 0);
         }
@@ -97,20 +113,20 @@ public class DeviceManager {
      * @param bytes     发送字节流
      * @param count     尝试次数
      */
-    public void retrySendMsg(String deviceId, byte[] bytes, int count){
-        count ++ ;
+    public void retrySendMsg(String deviceId, byte[] bytes, int count) {
+        count++;
         log.info("retry connect : {}, count - > {}", deviceId, count);
         try {
-            Socket socket = socketMap.get(deviceId) ;
-            if (null == socket || !socket.isConnected()){
+            Socket socket = socketMap.get(deviceId);
+            if (null == socket || !socket.isConnected()) {
                 socket = new Socket(serverAddress, serverPort);
-                socketMap.put(deviceId, socket) ;
+                socketMap.put(deviceId, socket);
             }
             OutputStream mSocketOut = socket.getOutputStream();
             mSocketOut.write(bytes);
             mSocketOut.flush();
             log.info("send deviceId : {} -->  {}", deviceId, HexStringUtil.toHexString(bytes));
-        }catch (Exception e){
+        } catch (Exception e) {
             log.info("retry connect : {}", deviceId);
             retrySendMsg(deviceId, bytes, count);
         }
@@ -122,10 +138,10 @@ public class DeviceManager {
      * @param deviceInfo        设备信息
      * @param serialNumber      流水号
      */
-    public void sendCheckData(DeviceInfo deviceInfo,long serialNumber) {
+    public void sendCheckData(DeviceInfo deviceInfo, long serialNumber) {
         try {
             byte[] checkByte = deviceMessageFactory.generateCheckByte(deviceInfo.getDeviceCode(), serialNumber);
-            sendMsg(deviceInfo.getDeviceId(),checkByte);
+            sendMsg(deviceInfo.getDeviceId(), checkByte);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -139,7 +155,7 @@ public class DeviceManager {
     public void sendRunData(DeviceInfo deviceInfo, int index) {
         try {
             byte[] runByte = deviceMessageFactory.generateRunByte(deviceInfo.getDeviceCode(), 1, index, Constants.CommandId.RUN_CMD_FLAG);
-            sendMsg(deviceInfo.getDeviceId(),runByte);
+            sendMsg(deviceInfo.getDeviceId(), runByte);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -153,7 +169,7 @@ public class DeviceManager {
     public void sendBackRunData(DeviceInfo deviceInfo, int index) {
         try {
             byte[] runByte = deviceMessageFactory.generateRunByte(deviceInfo.getDeviceCode(), 1, index, Constants.CommandId.RUN_BACK_CMD_FLAG);
-            sendMsg(deviceInfo.getDeviceId(),runByte);
+            sendMsg(deviceInfo.getDeviceId(), runByte);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -164,10 +180,10 @@ public class DeviceManager {
      * @param deviceInfo        设备信息
      * @param alarmBytes        报警字节流
      */
-    public void sendAlarmData(DeviceInfo deviceInfo, byte[] alarmBytes){
+    public void sendAlarmData(DeviceInfo deviceInfo, byte[] alarmBytes) {
         try {
-            byte[] alarmByte = deviceMessageFactory.generateAlarm(deviceInfo.getDeviceCode(), 1, alarmBytes) ;
-            sendMsg(deviceInfo.getDeviceId(),alarmByte);
+            byte[] alarmByte = deviceMessageFactory.generateAlarm(deviceInfo.getDeviceCode(), 1, alarmBytes);
+            sendMsg(deviceInfo.getDeviceId(), alarmByte);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -180,10 +196,10 @@ public class DeviceManager {
      * @param serialNumber      流水号
      * @param status   成功标志 0 成功（存在）  1 失败（不存在）
      */
-    public void sendCommon(int signalFlag, DeviceInfo deviceInfo,long serialNumber, int status){
+    public void sendCommon(int signalFlag, DeviceInfo deviceInfo, long serialNumber, int status) {
         try {
-            byte[] commonByte = deviceMessageFactory.generateCommon(signalFlag, deviceInfo.getDeviceCode(), serialNumber, status) ;
-            sendMsg(deviceInfo.getDeviceId(),commonByte);
+            byte[] commonByte = deviceMessageFactory.generateCommon(signalFlag, deviceInfo.getDeviceCode(), serialNumber, status);
+            sendMsg(deviceInfo.getDeviceId(), commonByte);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -194,11 +210,11 @@ public class DeviceManager {
      * @param deviceInfo        设备信息
      * @param serialNumber      流水号
      */
-    public void sendPlatFormData(DeviceInfo deviceInfo,long serialNumber) {
+    public void sendPlatFormData(DeviceInfo deviceInfo, long serialNumber) {
         try {
             byte[] commonByte = deviceMessageFactory.generatePlatformSet(deviceInfo.getDeviceCode(),
-                    serialNumber, secretMap.get(deviceInfo.getDeviceId())) ;
-            sendMsg(deviceInfo.getDeviceId(),commonByte);
+                    serialNumber, secretMap.get(deviceInfo.getDeviceId()));
+            sendMsg(deviceInfo.getDeviceId(), commonByte);
         } catch (Exception e) {
             e.printStackTrace();
         }

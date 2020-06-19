@@ -41,6 +41,6 @@ public interface Constants {
     /**
      * 密钥
      */
-    byte[] key = Base64.getDecoder().decode("MDEyMzQ1Njc4OWFiY2RlZg==");
+    byte[] KEY = Base64.getDecoder().decode("MDEyMzQ1Njc4OWFiY2RlZg==");
 
 }

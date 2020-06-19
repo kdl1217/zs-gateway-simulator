@@ -36,20 +36,20 @@ public class Sender {
 
         // 执行任务
         scheduledExecutorService.scheduleAtFixedRate(
-                () -> deviceManager.deviceMap.forEach((key, deviceInfo) -> {
+                () -> deviceManager.getDeviceMap().forEach((key, deviceInfo) -> {
 
             // 设备号
-            String deviceId = deviceInfo.getDeviceId() ;
+            String deviceId = deviceInfo.getDeviceId();
             // 获取发送次数，用于发送不同报文
-            Integer index = deviceManager.indexMap.get(deviceId);
+            Integer index = deviceManager.getIndexMap().get(deviceId);
             if (null == index) {
                 index = 0;
             }
 
-            if (0 == index){
-                deviceManager.sendCheckData(deviceInfo,System.currentTimeMillis());
-            }else {
-                deviceManager.sendRunData(deviceInfo,0);
+            if (0 == index) {
+                deviceManager.sendCheckData(deviceInfo, System.currentTimeMillis());
+            } else {
+                deviceManager.sendRunData(deviceInfo, 0);
                 switch (index) {
                     case 1:
                         // 关闭报警
@@ -75,12 +75,12 @@ public class Sender {
                         // 蓄电池欠压
                         deviceManager.sendAlarmData(deviceInfo, new byte[]{0x00, 0x10});
                         break;
+                    default:
                 }
 
             }
-            index ++ ;
-            deviceManager.indexMap.put(deviceId, index) ;
-        }), period, period, TimeUnit.SECONDS) ;
+            index++;
+            deviceManager.getIndexMap().put(deviceId, index);
+        }), period, period, TimeUnit.SECONDS);
     }
-
 }

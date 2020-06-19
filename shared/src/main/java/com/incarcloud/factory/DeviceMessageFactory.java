@@ -37,14 +37,14 @@ public final class DeviceMessageFactory {
     /**
      * 单例模式
      */
-    private static DeviceMessageFactory INSTANCE = new DeviceMessageFactory(new ProtocolEngine());
+    private static DeviceMessageFactory instance = new DeviceMessageFactory(new ProtocolEngine());
 
     static class Point {
 
         private double x;
         private double y;
 
-        public Point(double x, double y) {
+        Point(double x, double y) {
             this.x = x;
             this.y = y;
         }
@@ -69,7 +69,7 @@ public final class DeviceMessageFactory {
     /**
      * 轨迹
      */
-    public static List<Point> geoPoints = new ArrayList<Point>(){
+    private static List<Point> geoPoints = new ArrayList<Point>() {
         {
             add(new Point(114.4036630000D, 30.4757560000D));
             add(new Point(114.4035880000D, 30.4754320000D));
@@ -102,7 +102,7 @@ public final class DeviceMessageFactory {
      * 静态工厂方法
      */
     public static DeviceMessageFactory getInstance() {
-        return INSTANCE;
+        return instance;
     }
 
     /**
@@ -122,12 +122,11 @@ public final class DeviceMessageFactory {
         checkData.setVehicleCode(new byte[]{-117, 3, 37, 0});
         checkData.setGatherTime(IcDataPackUtils.date2buf(Calendar.getInstance().getTimeInMillis())); // 时间戳
 
-        ProtocolEngine engine = new ProtocolEngine();
-        byte[] byteData = engine.encode(checkData);
+        byte[] byteData = this.engine.encode(checkData);
         IcPackage icPackage = new IcPackage();
 
-        int length = byteData.length+12+deviceCode.length();
-        Header header = getHeader(deviceCode, Constants.CommandId.CHECK_CMD_FLAG,serialNumber,length);
+        int length = byteData.length + 12 + deviceCode.length();
+        Header header = getHeader(deviceCode, Constants.CommandId.CHECK_CMD_FLAG, serialNumber, length);
 
         Tail tail = new Tail();
         tail.setSideWord(13);
@@ -136,9 +135,9 @@ public final class DeviceMessageFactory {
         icPackage.setBodyBuffer(byteData);
         icPackage.setTail(tail);
 
-        byte[] bytes = engine.encode(icPackage);
+        byte[] bytes = this.engine.encode(icPackage);
 
-        return IcDataPackUtils.addCheck(bytes, Constants.key);
+        return IcDataPackUtils.addCheck(bytes, Constants.KEY);
     }
 
     /**
@@ -204,7 +203,7 @@ public final class DeviceMessageFactory {
 
         overviewData.setSoc(20); // SOC
         overviewData.setSpeed(50); // 行驶记录速度 km/h
-        overviewData.setMileage(new byte[]{0,20,25}); // 车辆行驶里程
+        overviewData.setMileage(new byte[]{0, 20, 25}); // 车辆行驶里程
         overviewData.setBatteryVoltage(12); // 蓄电池电压
         overviewData.setPowerCellVoltage(122); // 动力电池电压
         overviewData.setGnssSatelliteNumber(1); // GNSS卫星数量
@@ -213,7 +212,7 @@ public final class DeviceMessageFactory {
         overviewData.setFault("Kong"); // 故障信息，多个以逗号分隔
         overviewData.setAirConditionerStatus(1); // 空调状态
         overviewData.setAirConditionerFanStatus(1); // 空调风扇状态
-        overviewData.setRechargeMileage(new byte[]{0,12,25}); // 续航里程 【0.1KM】
+        overviewData.setRechargeMileage(new byte[]{0, 12, 25}); // 续航里程 【0.1KM】
         overviewData.setFuelQuantity(80); // 剩余油量 【单位：%】
         overviewData.setLeftFrontTirePressure(280); // 左前轮胎压 【单位：kPa】
         overviewData.setRightFrontTirePressure(280); // 右前轮胎压【单位：kPa】
@@ -224,8 +223,7 @@ public final class DeviceMessageFactory {
         overviewData.setAvgOilUsed(8.5D); // 平均油耗【单位：0.1L/100KM】
 
 
-        ProtocolEngine engine = new ProtocolEngine();
-        byte[] byteData = engine.encode(overviewData);
+        byte[] byteData = this.engine.encode(overviewData);
         IcPackage icPackage = new IcPackage();
 
         int length = byteData.length + 12 + deviceCode.length();
@@ -238,9 +236,9 @@ public final class DeviceMessageFactory {
         icPackage.setBodyBuffer(byteData);
         icPackage.setTail(tail);
 
-        byte[] bytes = engine.encode(icPackage);
+        byte[] bytes = this.engine.encode(icPackage);
 
-        return IcDataPackUtils.addCheck(bytes, Constants.key);
+        return IcDataPackUtils.addCheck(bytes, Constants.KEY);
     }
 
     /**
@@ -260,13 +258,12 @@ public final class DeviceMessageFactory {
         resp.setError(new byte[]{0x00, 0x00, 0x00, 0x00});  // 错误码
         resp.setDate(IcDataPackUtils.date2buf(Calendar.getInstance().getTimeInMillis())); // 时间
 
-        ProtocolEngine engine = new ProtocolEngine();
-        byte[] byteData = engine.encode(resp);
+        byte[] byteData = this.engine.encode(resp);
         IcPackage icPackage = new IcPackage();
 
-        int length = byteData.length+12+deviceCode.length();
+        int length = byteData.length + 12 + deviceCode.length();
 
-        Header header = getHeader(deviceCode,0xEE ,serialNumber,length);
+        Header header = getHeader(deviceCode, 0xEE, serialNumber, length);
 
         Tail tail = new Tail();
         tail.setSideWord(13);
@@ -275,8 +272,8 @@ public final class DeviceMessageFactory {
         icPackage.setBodyBuffer(byteData);
         icPackage.setTail(tail);
 
-        byte[] bytes = engine.encode(icPackage);
-        return IcDataPackUtils.addCheck(bytes,Constants.key);
+        byte[] bytes = this.engine.encode(icPackage);
+        return IcDataPackUtils.addCheck(bytes, Constants.KEY);
     }
 
     /**
@@ -306,8 +303,7 @@ public final class DeviceMessageFactory {
 
         alarmData.setGatherTime(IcDataPackUtils.date2buf(Calendar.getInstance().getTimeInMillis()));
 
-        ProtocolEngine engine = new ProtocolEngine();
-        byte[] byteData = engine.encode(alarmData);
+        byte[] byteData = this.engine.encode(alarmData);
         IcPackage icPackage = new IcPackage();
 
         int length = byteData.length + 12 + deviceCode.length();
@@ -320,9 +316,9 @@ public final class DeviceMessageFactory {
         icPackage.setBodyBuffer(byteData);
         icPackage.setTail(tail);
 
-        byte[] bytes = engine.encode(icPackage);
+        byte[] bytes = this.engine.encode(icPackage);
 
-        return IcDataPackUtils.addCheck(bytes,Constants.key);
+        return IcDataPackUtils.addCheck(bytes, Constants.KEY);
     }
 
     /**
@@ -368,8 +364,7 @@ public final class DeviceMessageFactory {
             platformSetData.setSmartSecret(smartSecret.getBytes());
         }
 
-        ProtocolEngine engine = new ProtocolEngine();
-        byte[] byteData = engine.encode(platformSetData);
+        byte[] byteData = this.engine.encode(platformSetData);
 
         byte[] bytes = new byte[numberByte.length + byteData.length];
         System.arraycopy(numberByte, 0, bytes, 0, numberByte.length);
@@ -387,12 +382,12 @@ public final class DeviceMessageFactory {
         icPackage.setBodyBuffer(bytes);
         icPackage.setTail(tail);
 
-        byte[] responseByte = engine.encode(icPackage);
+        byte[] responseByte = this.engine.encode(icPackage);
 
-        return IcDataPackUtils.addCheck(responseByte, Constants.key);
+        return IcDataPackUtils.addCheck(responseByte, Constants.KEY);
     }
 
-    private Header getHeader(String deviceCode,int cmdFlag, long serialNumber, int length){
+    private Header getHeader(String deviceCode, int cmdFlag, long serialNumber, int length) {
         Header header = new Header();
         header.setCmdFlag(cmdFlag); // 主信令
         header.setLength(length);  // 数据单元长度

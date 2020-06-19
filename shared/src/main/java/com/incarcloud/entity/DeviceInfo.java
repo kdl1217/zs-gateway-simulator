@@ -37,9 +37,9 @@ public class DeviceInfo {
     private byte[] key;
 
     public DeviceInfo(String deviceId, String deviceCode, String vin) {
-        this.deviceId = deviceId ;
-        this.deviceCode = deviceCode ;
-        this.vin = vin ;
-        this.key = Constants.key;
+        this.deviceId = deviceId;
+        this.deviceCode = deviceCode;
+        this.vin = vin;
+        this.key = Constants.KEY;
     }
 }
