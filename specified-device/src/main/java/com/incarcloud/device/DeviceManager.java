@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 设备管理者
@@ -34,9 +35,12 @@ public class DeviceManager {
     @Value("${gateway.server-port}")
     Integer serverPort;
 
+    @Value("${gateway.inactive}")
+    Integer inactive;
+
     /**
      * 初始化设备信息
-     *      可设置多个设备
+     * 可设置多个设备
      */
     public void init() {
         log.info("init device information ...");
@@ -85,10 +89,13 @@ public class DeviceManager {
         return secretMap;
     }
 
+    private AtomicInteger count = new AtomicInteger(0);
+
     /**
      * Socket通道发送数据
+     *
      * @param deviceId 设备ID （IMEI）
-     * @param bytes     发送字节流
+     * @param bytes    发送字节流
      */
     public void sendMsg(String deviceId, byte[] bytes) {
         try {
@@ -96,6 +103,14 @@ public class DeviceManager {
             if (null == socket || !socket.isConnected()) {
                 socket = new Socket(serverAddress, serverPort);
                 socketMap.put(deviceId, socket);
+            }
+
+            int checkCount = count.incrementAndGet();
+            if (checkCount == inactive) {
+                socket.close();
+                secretMap.remove(deviceId);
+                count.set(0);
+                log.info("socket inactive:{}", deviceId);
             }
             OutputStream mSocketOut = socket.getOutputStream();
             mSocketOut.write(bytes);
@@ -109,16 +124,17 @@ public class DeviceManager {
 
     /**
      * 重试发送数据
+     *
      * @param deviceId 设备ID （IMEI）
-     * @param bytes     发送字节流
-     * @param count     尝试次数
+     * @param bytes    发送字节流
+     * @param count    尝试次数
      */
     public void retrySendMsg(String deviceId, byte[] bytes, int count) {
         count++;
         log.info("retry connect : {}, count - > {}", deviceId, count);
         try {
             Socket socket = socketMap.get(deviceId);
-            if (null == socket || !socket.isConnected()) {
+            if (null == socket || !socket.isConnected() || socket.isClosed()) {
                 socket = new Socket(serverAddress, serverPort);
                 socketMap.put(deviceId, socket);
             }
@@ -135,8 +151,9 @@ public class DeviceManager {
 
     /**
      * 发送校验数据
-     * @param deviceInfo        设备信息
-     * @param serialNumber      流水号
+     *
+     * @param deviceInfo   设备信息
+     * @param serialNumber 流水号
      */
     public void sendCheckData(DeviceInfo deviceInfo, long serialNumber) {
         try {
@@ -149,8 +166,9 @@ public class DeviceManager {
 
     /**
      * 发送运行数据
-     * @param deviceInfo        设备信息
-     * @param index             经纬度标记
+     *
+     * @param deviceInfo 设备信息
+     * @param index      经纬度标记
      */
     public void sendRunData(DeviceInfo deviceInfo, int index) {
         try {
@@ -163,8 +181,9 @@ public class DeviceManager {
 
     /**
      * 发送运行数据 - 回馈
-     * @param deviceInfo        设备信息
-     * @param index             经纬度标记
+     *
+     * @param deviceInfo 设备信息
+     * @param index      经纬度标记
      */
     public void sendBackRunData(DeviceInfo deviceInfo, int index) {
         try {
@@ -177,8 +196,9 @@ public class DeviceManager {
 
     /**
      * 发送报警数据
-     * @param deviceInfo        设备信息
-     * @param alarmBytes        报警字节流
+     *
+     * @param deviceInfo 设备信息
+     * @param alarmBytes 报警字节流
      */
     public void sendAlarmData(DeviceInfo deviceInfo, byte[] alarmBytes) {
         try {
@@ -191,10 +211,11 @@ public class DeviceManager {
 
     /**
      * 发送通用数据
-     * @param signalFlag        应答命令
-     * @param deviceInfo        设备信息
-     * @param serialNumber      流水号
-     * @param status   成功标志 0 成功（存在）  1 失败（不存在）
+     *
+     * @param signalFlag   应答命令
+     * @param deviceInfo   设备信息
+     * @param serialNumber 流水号
+     * @param status       成功标志 0 成功（存在）  1 失败（不存在）
      */
     public void sendCommon(int signalFlag, DeviceInfo deviceInfo, long serialNumber, int status) {
         try {
@@ -207,8 +228,9 @@ public class DeviceManager {
 
     /**
      * 发送平台设置数据
-     * @param deviceInfo        设备信息
-     * @param serialNumber      流水号
+     *
+     * @param deviceInfo   设备信息
+     * @param serialNumber 流水号
      */
     public void sendPlatFormData(DeviceInfo deviceInfo, long serialNumber) {
         try {
