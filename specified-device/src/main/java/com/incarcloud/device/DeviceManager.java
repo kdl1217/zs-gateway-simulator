@@ -41,8 +41,9 @@ public class DeviceManager {
      */
     public void init() {
         log.info("init device information ...");
+        deviceMap.put("GPSSN000050",new DeviceInfo("GPSSN000050", "KEYTEST050", "TEST0000000000050")) ;
 
-        deviceMap.put("YK001912D4", new DeviceInfo("863576043319974", "YK001912D4", "LVGEN56A8JG257045"));
+//        deviceMap.put("YK001912D4", new DeviceInfo("863576043319974", "YK001912D4", "LVGEN56A8JG257045"));
     }
 
     /**
