@@ -109,10 +109,11 @@ public final class DeviceMessageFactory {
      * 生成上线校验报文
      * @param deviceCode            设备号
      * @param serialNumber          流水号
+     * @param key                   T-Box密钥
      * @return      报文
      * @throws Exception        异常
      */
-    public byte[] generateCheckByte(String deviceCode, Long serialNumber) throws Exception {
+    public byte[] generateCheckByte(String deviceCode, Long serialNumber, byte[] key) throws Exception {
         CheckData checkData = new CheckData();
         checkData.setSoftwareVersionNo(new byte[]{0x03, 0x01, 0x07});
         checkData.setVinLength(0);
@@ -137,17 +138,18 @@ public final class DeviceMessageFactory {
 
         byte[] bytes = this.engine.encode(icPackage);
 
-        return IcDataPackUtils.addCheck(bytes, Constants.KEY);
+        return IcDataPackUtils.addCheck(bytes, key);
     }
 
     /**
      * 生成运行数据
      * @param deviceCode            设备号
      * @param serialNumber          流水号
+     * @param key                   T-Box密钥
      * @return      报文
      * @throws Exception        异常
      */
-    public byte[] generateRunByte(String deviceCode, int serialNumber, int index, int commandId) throws Exception {
+    public byte[] generateRunByte(String deviceCode, int serialNumber, int index, int commandId, byte[] key) throws Exception {
 
         // 对象数据
         OverviewData overviewData = new OverviewData();
@@ -238,7 +240,7 @@ public final class DeviceMessageFactory {
 
         byte[] bytes = this.engine.encode(icPackage);
 
-        return IcDataPackUtils.addCheck(bytes, Constants.KEY);
+        return IcDataPackUtils.addCheck(bytes, key);
     }
 
     /**
@@ -247,10 +249,11 @@ public final class DeviceMessageFactory {
      * @param deviceCode            设备编号
      * @param serialNumber          流水号
      * @param status                返回状态
+     * @param key                   T-Box密钥
      * @return      报文
      * @throws Exception        异常
      */
-    public byte[] generateCommon(int signalFlag, String deviceCode, long serialNumber, int status) throws Exception {
+    public byte[] generateCommon(int signalFlag, String deviceCode, long serialNumber, int status, byte[] key) throws Exception {
 
         CommonRespData resp = new CommonRespData();
         resp.setSignalFlag(signalFlag);
@@ -273,17 +276,18 @@ public final class DeviceMessageFactory {
         icPackage.setTail(tail);
 
         byte[] bytes = this.engine.encode(icPackage);
-        return IcDataPackUtils.addCheck(bytes, Constants.KEY);
+        return IcDataPackUtils.addCheck(bytes, key);
     }
 
     /**
      * 生成报警数据报文
      * @param deviceCode            设备号
      * @param serialNumber          流水号
+     * @param key                   T-Box密钥
      * @return      报文
      * @throws Exception        异常
      */
-    public byte[] generateAlarm(String deviceCode, int serialNumber, byte[] alarmBytes) throws Exception {
+    public byte[] generateAlarm(String deviceCode, int serialNumber, byte[] alarmBytes, byte[] key) throws Exception {
         // 对象数据
         AlarmData alarmData = new AlarmData();
 
@@ -318,7 +322,7 @@ public final class DeviceMessageFactory {
 
         byte[] bytes = this.engine.encode(icPackage);
 
-        return IcDataPackUtils.addCheck(bytes, Constants.KEY);
+        return IcDataPackUtils.addCheck(bytes, key);
     }
 
     /**
@@ -326,10 +330,11 @@ public final class DeviceMessageFactory {
      * @param deviceCode            设备号
      * @param serialNumber          流水号
      * @param smartSecret           433密钥
+     * @param key                   T-Box密钥
      * @return      报文
      * @throws Exception        异常
      */
-    public byte[] generatePlatformSet(String deviceCode, long serialNumber, String smartSecret) throws Exception {
+    public byte[] generatePlatformSet(String deviceCode, long serialNumber, String smartSecret, byte[] key) throws Exception {
         // 对象数据
         PlatformSetData platformSetData = new PlatformSetData();
         // 手机号码
@@ -386,7 +391,7 @@ public final class DeviceMessageFactory {
 
         byte[] responseByte = this.engine.encode(icPackage);
 
-        return IcDataPackUtils.addCheck(responseByte, Constants.KEY);
+        return IcDataPackUtils.addCheck(responseByte, key);
     }
 
     private Header getHeader(String deviceCode, int cmdFlag, long serialNumber, int length) {
