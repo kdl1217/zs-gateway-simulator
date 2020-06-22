@@ -227,7 +227,7 @@ public final class DeviceMessageFactory {
         IcPackage icPackage = new IcPackage();
 
         int length = byteData.length + 12 + deviceCode.length();
-        Header header = getHeader(deviceCode, commandId, serialNumber,length);
+        Header header = getHeader(deviceCode, commandId, serialNumber, length);
 
         Tail tail = new Tail();
         tail.setSideWord(13);
