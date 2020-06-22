@@ -67,7 +67,7 @@ public class Receiver {
      * @param deviceInfo        设备信息
      * @param buffer            接收到的指令
      */
-    private void sendCommand(DeviceInfo deviceInfo, byte[] buffer) throws Exception {
+    public void sendCommand(DeviceInfo deviceInfo, byte[] buffer) throws Exception {
 
         if (buffer[2] == 0x07 || buffer[2] == 0x08 || buffer[2] == 0x03) {
             // 解析器

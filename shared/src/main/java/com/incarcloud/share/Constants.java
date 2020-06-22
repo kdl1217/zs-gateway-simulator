@@ -43,4 +43,35 @@ public interface Constants {
      */
     byte[] KEY = Base64.getDecoder().decode("MDEyMzQ1Njc4OWFiY2RlZg==");
 
+
+    interface AlarmType {
+        /**
+         * 关闭所有报警
+         */
+        byte[] CLOSE_ALL = new byte[]{0x00, 0x00};
+        /**
+         * 碰撞
+         */
+        byte[] CRASH = new byte[]{0x00, 0x01};
+        /**
+         * 震动
+         */
+        byte[] SHAKE = new byte[]{0x00, 0x02};
+        /**
+         * 空闲时有速度
+         */
+        byte[] IDLE_SPEED = new byte[]{0x00, 0x04};
+        /**
+         * gnss天线断开
+         */
+        byte[] GNSS_DISCONNECT = new byte[]{0x00, 0x08};
+        /**
+         * 蓄电池欠压
+         */
+        byte[] BATTERY_UNDERVOLTAGE = new byte[]{0x00, 0x10};
+        /**
+         * 蓄电池过压
+         */
+        byte[] BATTERY_OVERVOLTAGE = new byte[]{0x00, 0x20};
+    }
 }

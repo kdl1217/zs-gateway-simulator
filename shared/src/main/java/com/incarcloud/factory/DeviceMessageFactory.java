@@ -358,10 +358,12 @@ public final class DeviceMessageFactory {
         platformSetData.setPort(6666); // 端口号
         platformSetData.setStandbyIpLength(0);
 
-        platformSetData.setSmartSecretLength(0);
+        // 默认密钥
         if (StringUtils.isNotBlank(smartSecret)) {
             platformSetData.setSmartSecretLength(smartSecret.length());
             platformSetData.setSmartSecret(smartSecret.getBytes());
+        } else {
+            platformSetData.setSmartSecretLength(0);
         }
 
         byte[] byteData = this.engine.encode(platformSetData);
@@ -372,7 +374,7 @@ public final class DeviceMessageFactory {
 
         IcPackage icPackage = new IcPackage();
 
-        int headerLength = byteData.length + 12 + deviceCode.length();
+        int headerLength = bytes.length + 12 + deviceCode.length();
         Header header = getHeader(deviceCode, Constants.CommandId.PLAT_SET_FLAG, serialNumber, headerLength);
 
         Tail tail = new Tail();

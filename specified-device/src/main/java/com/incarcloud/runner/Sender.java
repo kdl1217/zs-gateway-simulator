@@ -1,6 +1,7 @@
 package com.incarcloud.runner;
 
 import com.incarcloud.device.DeviceManager;
+import com.incarcloud.share.Constants;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -53,27 +54,31 @@ public class Sender {
                 switch (index) {
                     case 1:
                         // 关闭报警
-                        deviceManager.sendAlarmData(deviceInfo, new byte[]{0x00, 0x00});
+                        deviceManager.sendAlarmData(deviceInfo, Constants.AlarmType.CLOSE_ALL);
                         break;
                     case 2:
                         // 发送碰撞报警
-                        deviceManager.sendAlarmData(deviceInfo, new byte[]{0x00, 0x01});
+                        deviceManager.sendAlarmData(deviceInfo, Constants.AlarmType.CRASH);
                         break;
                     case 3:
                         // 发送震动报警
-                        deviceManager.sendAlarmData(deviceInfo, new byte[]{0x00, 0x02});
+                        deviceManager.sendAlarmData(deviceInfo, Constants.AlarmType.SHAKE);
                         break;
                     case 4:
                         // 车辆在空闲状态下有速度
-                        deviceManager.sendAlarmData(deviceInfo, new byte[]{0x00, 0x04});
+                        deviceManager.sendAlarmData(deviceInfo, Constants.AlarmType.IDLE_SPEED);
                         break;
                     case 5:
                         // GNSS天线未接或被剪断
-                        deviceManager.sendAlarmData(deviceInfo, new byte[]{0x00, 0x08});
+                        deviceManager.sendAlarmData(deviceInfo, Constants.AlarmType.GNSS_DISCONNECT);
                         break;
                     case 6:
                         // 蓄电池欠压
-                        deviceManager.sendAlarmData(deviceInfo, new byte[]{0x00, 0x10});
+                        deviceManager.sendAlarmData(deviceInfo, Constants.AlarmType.BATTERY_UNDERVOLTAGE);
+                        break;
+                    case 7:
+                        // 蓄电池过压
+                        deviceManager.sendAlarmData(deviceInfo, Constants.AlarmType.BATTERY_OVERVOLTAGE);
                         break;
                     default:
                 }
