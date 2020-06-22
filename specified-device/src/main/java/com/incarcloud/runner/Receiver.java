@@ -7,7 +7,8 @@ import com.incarcloud.boar.datapack.ic.model.IcPackage;
 import com.incarcloud.boar.datapack.ic.utils.IcDataPackUtils;
 import com.incarcloud.device.DeviceManager;
 import com.incarcloud.entity.DeviceInfo;
-import lombok.extern.log4j.Log4j2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,9 +22,10 @@ import java.net.SocketException;
  * @author Kong, created on 2020-06-18T14:00.
  * @since 1.0.0-SNAPSHOT
  */
-@Log4j2
 @Component
 public class Receiver {
+
+    private Logger log = LoggerFactory.getLogger(Receiver.class);
 
     @Autowired
     protected DeviceManager deviceManager;

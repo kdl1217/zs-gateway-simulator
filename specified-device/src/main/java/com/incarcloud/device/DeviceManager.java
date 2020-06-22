@@ -4,7 +4,8 @@ import com.github.io.protocol.utils.HexStringUtil;
 import com.incarcloud.entity.DeviceInfo;
 import com.incarcloud.factory.DeviceMessageFactory;
 import com.incarcloud.share.Constants;
-import lombok.extern.log4j.Log4j2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -19,10 +20,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Kong, created on 2020-06-18T14:08.
  * @since 1.0.0-SNAPSHOT
  */
-@Log4j2
 @Component
 public class DeviceManager {
 
+    private Logger log = LoggerFactory.getLogger(DeviceManager.class);
     /**
      * 网关服务地址
      */

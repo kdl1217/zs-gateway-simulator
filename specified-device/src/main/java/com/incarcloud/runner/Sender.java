@@ -1,7 +1,8 @@
 package com.incarcloud.runner;
 
 import com.incarcloud.device.DeviceManager;
-import lombok.extern.log4j.Log4j2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,9 +16,10 @@ import java.util.concurrent.TimeUnit;
  * @author Kong, created on 2020-06-18T13:59.
  * @since 1.0.0-SNAPSHOT
  */
-@Log4j2
 @Component
 public class Sender {
+
+    private Logger log = LoggerFactory.getLogger(Receiver.class);
 
     @Autowired
     protected DeviceManager deviceManager;

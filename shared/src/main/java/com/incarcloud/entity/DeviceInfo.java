@@ -1,19 +1,12 @@
 package com.incarcloud.entity;
 
 import com.incarcloud.share.Constants;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
  * 设备信息类
  *
  * @author Kong, created on 2020-06-18T13:59.
  * @since 1.0.0-SNAPSHOT
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class DeviceInfo {
 
     /**
@@ -41,5 +34,37 @@ public class DeviceInfo {
         this.deviceCode = deviceCode;
         this.vin = vin;
         this.key = Constants.KEY;
+    }
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    public String getDeviceCode() {
+        return deviceCode;
+    }
+
+    public void setDeviceCode(String deviceCode) {
+        this.deviceCode = deviceCode;
+    }
+
+    public String getVin() {
+        return vin;
+    }
+
+    public void setVin(String vin) {
+        this.vin = vin;
+    }
+
+    public byte[] getKey() {
+        return key;
+    }
+
+    public void setKey(byte[] key) {
+        this.key = key;
     }
 }

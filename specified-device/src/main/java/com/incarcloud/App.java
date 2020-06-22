@@ -3,7 +3,6 @@ package com.incarcloud;
 import com.incarcloud.device.DeviceManager;
 import com.incarcloud.runner.Receiver;
 import com.incarcloud.runner.Sender;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -15,7 +14,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author Aaric, created on 2018-04-18T10:31.
  * @since 0.0.1-SNAPSHOT
  */
-@Log4j2
 @SpringBootApplication
 public class App implements CommandLineRunner {
 

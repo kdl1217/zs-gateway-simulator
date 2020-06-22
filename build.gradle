@@ -12,7 +12,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "io.freefair.gradle:lombok-plugin:$lombokVersion"
+//        classpath "io.freefair.gradle:lombok-plugin:$lombokVersion"
         classpath "io.spring.gradle:dependency-management-plugin:$dependencyManagementVersion"
         classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
     }
@@ -32,6 +32,7 @@ allprojects {
     repositories {
         maven { url "https://maven.aliyun.com/repository/public" }
         maven { url "https://repository.incarcloud.com/content/groups/public" }
+
     }
 
     dependencyManagement {
@@ -40,19 +41,22 @@ allprojects {
         }
 
         dependencies {
+
             dependency "com.incarcloud:boar-datapack-ic:1.2-SNAPSHOT"
 
             dependency "com.alibaba:fastjson:1.2.68"
             dependency "com.alibaba:druid-spring-boot-starter:1.1.22"
 
             dependency "org.apache.commons:commons-lang3:3.10"
+//            dependency "org.projectlombok:lombok:1.16.18"
+
         }
     }
 }
 
 subprojects {
     apply plugin: "checkstyle"
-    apply plugin: "io.freefair.lombok"
+//    apply plugin: "io.freefair.lombok"
 
     configurations {
         developmentOnly
@@ -95,15 +99,6 @@ subprojects {
         useJUnitPlatform()
     }
 
-    task removeLombokConfig() {
-        def subProjectPath = project.projectDir
-        if (null != subProjectPath) {
-            def lombokConfigFile = new File(subProjectPath, "lombok.config")
-            if (lombokConfigFile.exists()) {
-                lombokConfigFile.delete()
-            }
-        }
-    }
 
     defaultTasks "assemble"
 }
