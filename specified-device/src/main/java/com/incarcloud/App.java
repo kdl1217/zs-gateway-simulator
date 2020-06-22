@@ -8,6 +8,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.io.IOException;
+
 /**
  * Spring Boot Launcher.
  *
@@ -37,7 +39,7 @@ public class App implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) {
+    public void run(String... args) throws IOException {
         // 初始化 设备信息
         deviceManager.init();
         // 启动发送者

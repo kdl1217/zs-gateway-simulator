@@ -17,4 +17,5 @@ spring:
 ## 暂时不支持往多台网关发送数据
 gateway:
   server-address: 122.9.51.1
+  read-file: false
   server-port: 6666

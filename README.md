@@ -19,17 +19,18 @@
 
 -------
 
- ## 模拟器启动配置
+ ## 模拟器启动配置【支持jar启动加载设备配置】
  
  ````yaml
  # Gateway Setting
  ## 暂时不支持往多台网关发送数据
  gateway:
+   read-file: false  # 是否加载配置信息
    server-address: 网关服务地址
    server-port: 网关服务端口
  ````
  
- ## 启动设备信息修改[![modify](https://img.shields.io/badge/修改代码位置-blue.svg)](https://github.com/kdl1217/zs-gateway-simulator/blob/master/specified-device/src/main/java/com/incarcloud/device/DeviceManager.java#L44)
+ ### 启动设备信息修改[![modify](https://img.shields.io/badge/修改代码位置-blue.svg)](https://github.com/kdl1217/zs-gateway-simulator/blob/master/specified-device/src/main/java/com/incarcloud/device/DeviceManager.java#L44)
  
  ````java
      public void init() {
@@ -37,3 +38,10 @@
          deviceMap.put("YK001912D4",new DeviceInfo("863576043319974", "YK001912D4", "LVGEN56A8JG257045")) ;
      }
  ````
+
+### Jar启动配置[![modify](https://img.shields.io/badge/smart.properties-blue.svg)](https://github.com/kdl1217/zs-gateway-simulator/blob/master/specified-device/src/main/resources/smart.properties)
+````text
+    1. 修改application.yml配置文件 read-file: true
+    2. 获取.properties配置文件，放在"D:\zs-simulator"目录下
+    3. 修改配置文件相关信息，启动会加载配置文件信息
+````

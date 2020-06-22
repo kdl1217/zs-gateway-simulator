@@ -6,12 +6,15 @@ import com.incarcloud.factory.DeviceMessageFactory;
 import com.incarcloud.share.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
+import java.util.Base64;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -27,6 +30,12 @@ public class DeviceManager {
     /**
      * 网关服务地址
      */
+    @Value("${gateway.read-file}")
+    Boolean readFile;
+
+    /**
+     * 网关服务地址
+     */
     @Value("${gateway.server-address}")
     String serverAddress;
     /**
@@ -39,12 +48,16 @@ public class DeviceManager {
      * 初始化设备信息
      *      可设置多个设备
      */
-    public void init() {
+    public void init() throws IOException {
         log.info("init device information ...");
-        deviceMap.put("GPSSN000050",new DeviceInfo("GPSSN000050", "KEYTEST050", "TEST0000000000050")) ;
+        deviceMap.put("166222225621656",new DeviceInfo("166222225621656", "KEYTEST050", "TEST0000000000050")) ;
 
-//        deviceMap.put("YK001912D4", new DeviceInfo("863576043319974", "YK001912D4", "LVGEN56A8JG257045"));
-    }
+        if (readFile) {
+            readProperties();
+        } else {
+            deviceMap.put("YK001912D4", new DeviceInfo("863576043319974", "YK001912D4", "LVGEN56A8JG257045"));
+        }
+        }
 
     /**
      * 初始化TBox数据包创建工厂
@@ -85,6 +98,34 @@ public class DeviceManager {
 
     public Map<String, String> getSecretMap() {
         return secretMap;
+    }
+
+    /**
+     * 读取配置文件
+     * @throws IOException IO异常
+     */
+    private void readProperties() throws IOException {
+        log.info("read smart properties ...");
+        Properties properties = new Properties();
+        // 使用InPutStream流读取properties文件
+        BufferedReader bufferedReader = new BufferedReader(new FileReader("D:\\zs-simulator\\smart.properties"));
+        properties.load(bufferedReader);
+
+        this.serverAddress = properties.getProperty("server-address");
+        this.serverPort = Integer.parseInt(properties.getProperty("server-port"));
+        String deviceStr = properties.getProperty("devices");
+        String[] devices = deviceStr.split(",");
+        for (String s : devices) {
+            if (StringUtils.isNotBlank(s)) {
+                String[] device = s.split("[|]");
+                if (device.length == 3) {
+                    deviceMap.put(device[0], new DeviceInfo(device[1], device[0], device[2]));
+                } else if (device.length == 4) {
+                    byte[] key = Base64.getDecoder().decode(device[3]);
+                    deviceMap.put(device[0], new DeviceInfo(device[1], device[0], device[2]));
+                }
+            }
+        }
     }
 
     /**
@@ -142,7 +183,8 @@ public class DeviceManager {
      */
     public void sendCheckData(DeviceInfo deviceInfo, long serialNumber) {
         try {
-            byte[] checkByte = deviceMessageFactory.generateCheckByte(deviceInfo.getDeviceCode(), serialNumber);
+            byte[] checkByte = deviceMessageFactory.generateCheckByte(deviceInfo.getDeviceCode(),
+                    serialNumber, deviceInfo.getKey());
             sendMsg(deviceInfo.getDeviceId(), checkByte);
         } catch (Exception e) {
             e.printStackTrace();
@@ -156,7 +198,8 @@ public class DeviceManager {
      */
     public void sendRunData(DeviceInfo deviceInfo, int index) {
         try {
-            byte[] runByte = deviceMessageFactory.generateRunByte(deviceInfo.getDeviceCode(), 1, index, Constants.CommandId.RUN_CMD_FLAG);
+            byte[] runByte = deviceMessageFactory.generateRunByte(deviceInfo.getDeviceCode(), 1,
+                    index, Constants.CommandId.RUN_CMD_FLAG, deviceInfo.getKey());
             sendMsg(deviceInfo.getDeviceId(), runByte);
         } catch (Exception e) {
             e.printStackTrace();
@@ -170,7 +213,8 @@ public class DeviceManager {
      */
     public void sendBackRunData(DeviceInfo deviceInfo, int index) {
         try {
-            byte[] runByte = deviceMessageFactory.generateRunByte(deviceInfo.getDeviceCode(), 1, index, Constants.CommandId.RUN_BACK_CMD_FLAG);
+            byte[] runByte = deviceMessageFactory.generateRunByte(deviceInfo.getDeviceCode(), 1,
+                    index, Constants.CommandId.RUN_BACK_CMD_FLAG, deviceInfo.getKey());
             sendMsg(deviceInfo.getDeviceId(), runByte);
         } catch (Exception e) {
             e.printStackTrace();
@@ -184,7 +228,8 @@ public class DeviceManager {
      */
     public void sendAlarmData(DeviceInfo deviceInfo, byte[] alarmBytes) {
         try {
-            byte[] alarmByte = deviceMessageFactory.generateAlarm(deviceInfo.getDeviceCode(), 1, alarmBytes);
+            byte[] alarmByte = deviceMessageFactory.generateAlarm(deviceInfo.getDeviceCode(), 1,
+                    alarmBytes, deviceInfo.getKey());
             sendMsg(deviceInfo.getDeviceId(), alarmByte);
         } catch (Exception e) {
             e.printStackTrace();
@@ -200,7 +245,8 @@ public class DeviceManager {
      */
     public void sendCommon(int signalFlag, DeviceInfo deviceInfo, long serialNumber, int status) {
         try {
-            byte[] commonByte = deviceMessageFactory.generateCommon(signalFlag, deviceInfo.getDeviceCode(), serialNumber, status);
+            byte[] commonByte = deviceMessageFactory.generateCommon(signalFlag, deviceInfo.getDeviceCode(),
+                    serialNumber, status, deviceInfo.getKey());
             sendMsg(deviceInfo.getDeviceId(), commonByte);
         } catch (Exception e) {
             e.printStackTrace();
@@ -215,7 +261,7 @@ public class DeviceManager {
     public void sendPlatFormData(DeviceInfo deviceInfo, long serialNumber) {
         try {
             byte[] commonByte = deviceMessageFactory.generatePlatformSet(deviceInfo.getDeviceCode(),
-                    serialNumber, secretMap.get(deviceInfo.getDeviceId()));
+                    serialNumber, secretMap.get(deviceInfo.getDeviceId()), deviceInfo.getKey());
             sendMsg(deviceInfo.getDeviceId(), commonByte);
         } catch (Exception e) {
             e.printStackTrace();
