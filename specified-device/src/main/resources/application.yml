@@ -19,3 +19,4 @@ gateway:
   server-address: tbox.zs.incarcloud.com
   read-file: false
   server-port: 6667
+

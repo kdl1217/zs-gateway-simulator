@@ -32,14 +32,9 @@ public interface Constants {
          */
         int ALARM_CMD_FLAG = 0x34;
         /**
-         * 平台设置-报警
+         * 获取平台设置
          */
-        int PLAT_SET_FLAG = 0x0C;
-
-        /**
-         * 平台设置-报警
-         */
-        int PLAT_SET_PARAMS = 0x64;
+        int PLAT_SET_FLAG = 0x64;
     }
 
 
