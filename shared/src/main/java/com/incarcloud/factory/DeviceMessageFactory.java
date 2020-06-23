@@ -120,7 +120,7 @@ public final class DeviceMessageFactory {
         checkData.setTelephoneLength(0);
         checkData.setBluetoothNameLength(0);
         checkData.setBluetoothMacLength(0);
-        checkData.setVehicleCode(new byte[]{0, 86, 13, 0});
+        checkData.setVehicleCode(new byte[]{0, 86, 19, 0});
         checkData.setGatherTime(IcDataPackUtils.date2buf(Calendar.getInstance().getTimeInMillis())); // 时间戳
 
         byte[] byteData = this.engine.encode(checkData);
