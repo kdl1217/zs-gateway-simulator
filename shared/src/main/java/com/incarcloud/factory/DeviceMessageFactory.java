@@ -380,7 +380,7 @@ public final class DeviceMessageFactory {
         IcPackage icPackage = new IcPackage();
 
         int headerLength = bytes.length + 12 + deviceCode.length();
-        Header header = getHeader(deviceCode, Constants.CommandId.PLAT_SET_FLAG, serialNumber, headerLength);
+        Header header = getHeader(deviceCode, Constants.CommandId.PLAT_SET_PARAMS, serialNumber, headerLength);
 
         Tail tail = new Tail();
         tail.setSideWord(13);

@@ -35,6 +35,11 @@ public interface Constants {
          * 平台设置-报警
          */
         int PLAT_SET_FLAG = 0x0C;
+
+        /**
+         * 平台设置-报警
+         */
+        int PLAT_SET_PARAMS = 0x64;
     }
 
 
