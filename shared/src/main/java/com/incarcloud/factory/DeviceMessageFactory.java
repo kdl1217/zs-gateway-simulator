@@ -287,7 +287,7 @@ public final class DeviceMessageFactory {
      * @return      报文
      * @throws Exception        异常
      */
-    public byte[] generateAlarm(String deviceCode, int serialNumber, byte[] alarmBytes, byte[] key) throws Exception {
+    public byte[] generateAlarm(String deviceCode, int serialNumber, byte[] alarmBytes, byte[] key, int index) throws Exception {
         // 对象数据
         AlarmData alarmData = new AlarmData();
 
@@ -295,8 +295,8 @@ public final class DeviceMessageFactory {
         positionData.setIsValidate(1); // 定位方式
         positionData.setLngType(0); // 0:东经；1:西经
         positionData.setLatType(0); // 0:北纬；1:南纬
-        positionData.setLongitude(114.40241); //经度 114.40241
-        positionData.setLatitude(30.477125); // 纬度 30.477125
+        positionData.setLongitude(geoPoints.get(index).getX()); //经度 114.40241
+        positionData.setLatitude(geoPoints.get(index).getY()); // 纬度 30.477125
         positionData.setDirection(56); // 方向
         positionData.setAltitude(156); // 海拔高度
         positionData.setGpsSpeed(25); // GPS速度

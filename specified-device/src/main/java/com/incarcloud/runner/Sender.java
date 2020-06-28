@@ -48,46 +48,40 @@ public class Sender {
             if (null == index) {
                 index = 0;
             }
-
+            // GPS 下标-固定
+            int gpsIndex = 0;
             if (0 == index) {
                 deviceManager.sendCheckData(deviceInfo, System.currentTimeMillis());
             } else {
-                deviceManager.sendRunData(deviceInfo, 0);
+                deviceManager.sendRunData(deviceInfo, gpsIndex);
                 switch (index) {
                     case 1:
                         // 关闭报警
-                        deviceManager.sendAlarmData(deviceInfo, Constants.AlarmType.CLOSE_ALL);
-                        log.info("关闭报警");
+                        deviceManager.sendAlarmData(deviceInfo, Constants.AlarmType.CLOSE_ALL, gpsIndex);
                         break;
                     case 2:
                         // 发送碰撞报警
-                        deviceManager.sendAlarmData(deviceInfo, Constants.AlarmType.CRASH);
-                        log.info("发送碰撞报警");
+                        deviceManager.sendAlarmData(deviceInfo, Constants.AlarmType.CRASH, gpsIndex);
                         break;
                     case 3:
                         // 发送震动报警
-                        deviceManager.sendAlarmData(deviceInfo, Constants.AlarmType.SHAKE);
-                        log.info("发送震动报警");
+                        deviceManager.sendAlarmData(deviceInfo, Constants.AlarmType.SHAKE, gpsIndex);
                         break;
                     case 4:
                         // 车辆在空闲状态下有速度
-                        deviceManager.sendAlarmData(deviceInfo, Constants.AlarmType.IDLE_SPEED);
-                        log.info("车辆在空闲状态下有速度");
+                        deviceManager.sendAlarmData(deviceInfo, Constants.AlarmType.IDLE_SPEED, gpsIndex);
                         break;
                     case 5:
                         // GNSS天线未接或被剪断
-                        deviceManager.sendAlarmData(deviceInfo, Constants.AlarmType.GNSS_DISCONNECT);
-                        log.info("GNSS天线未接或被剪断");
+                        deviceManager.sendAlarmData(deviceInfo, Constants.AlarmType.GNSS_DISCONNECT, gpsIndex);
                         break;
                     case 6:
                         // 蓄电池欠压
-                        deviceManager.sendAlarmData(deviceInfo, Constants.AlarmType.BATTERY_UNDERVOLTAGE);
-                        log.info("蓄电池欠压");
+                        deviceManager.sendAlarmData(deviceInfo, Constants.AlarmType.BATTERY_UNDERVOLTAGE, gpsIndex);
                         break;
                     case 7:
                         // 蓄电池过压
-                        deviceManager.sendAlarmData(deviceInfo, Constants.AlarmType.BATTERY_OVERVOLTAGE);
-                        log.info("蓄电池过压");
+                        deviceManager.sendAlarmData(deviceInfo, Constants.AlarmType.BATTERY_OVERVOLTAGE, gpsIndex);
                         break;
                     default:
                 }

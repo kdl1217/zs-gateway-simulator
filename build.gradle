@@ -20,7 +20,7 @@ buildscript {
 
 
 allprojects {
-    group 'org.example'
+    group 'com.incarcloud'
     version '1.0-SNAPSHOT'
 
     apply plugin: "java"

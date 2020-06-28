@@ -227,10 +227,10 @@ public class DeviceManager {
      * @param deviceInfo        设备信息
      * @param alarmBytes        报警字节流
      */
-    public void sendAlarmData(DeviceInfo deviceInfo, byte[] alarmBytes) {
+    public void sendAlarmData(DeviceInfo deviceInfo, byte[] alarmBytes, int index) {
         try {
             byte[] alarmByte = deviceMessageFactory.generateAlarm(deviceInfo.getDeviceCode(), 1,
-                    alarmBytes, deviceInfo.getKey());
+                    alarmBytes, deviceInfo.getKey(), index);
             sendMsg(deviceInfo.getDeviceId(), alarmByte);
         } catch (Exception e) {
             e.printStackTrace();
