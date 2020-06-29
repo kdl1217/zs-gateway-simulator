@@ -52,15 +52,15 @@ public class DeviceManager {
         log.info("init device information ...");
 //        deviceMap.put("166222225621656",new DeviceInfo("166222225621656", "KEYTEST050", "TEST0000000000050")) ;
 //        deviceMap.put("600000000000017",new DeviceInfo("600000000000017", "TBOXTEST013", "TESTSKT0000000001")) ;
-        deviceMap.put("867858032114004",new DeviceInfo("867858032114004", "KEYTEST04", "TESTWY00000000006")) ;
+        deviceMap.put("867858032114004", new DeviceInfo("867858032114004", "KEYTEST04", "TESTWY00000000006"));
 
         if (readFile) {
             readProperties();
         } else {
-//            deviceMap.put("YK001912D4", new DeviceInfo("863576043319974", "YK001912D4", "LVGEN56A8JG257045"));
-        }
-        }
+//            deviceMap.put("CS12123501", new DeviceInfo("100223049148801", "CS12123501", "CS123456202006295"));
 
+        }
+    }
     /**
      * 初始化TBox数据包创建工厂
      */
@@ -213,9 +213,9 @@ public class DeviceManager {
      * @param deviceInfo        设备信息
      * @param index             经纬度标记
      */
-    public void sendBackRunData(DeviceInfo deviceInfo, int index) {
+    public void sendBackRunData(DeviceInfo deviceInfo, long serialNumber, int index) {
         try {
-            byte[] runByte = deviceMessageFactory.generateRunByte(deviceInfo.getDeviceCode(), 1,
+            byte[] runByte = deviceMessageFactory.generateRunByte(deviceInfo.getDeviceCode(), serialNumber,
                     index, Constants.CommandId.RUN_BACK_CMD_FLAG, deviceInfo.getKey());
             sendMsg(deviceInfo.getDeviceId(), runByte);
         } catch (Exception e) {

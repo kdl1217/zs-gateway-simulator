@@ -155,8 +155,15 @@ public class Receiver {
             deviceManager.sendCommon(buffer[2], deviceInfo, header.getCommandId(), status);
         } else if (buffer[2] == 0x0A) {        // 请求车况数据
             log.info("收到请求车辆状态数据！！！");
+            // 解析器
+            ProtocolEngine engine = new ProtocolEngine();
+            // 设备长度
+            int deviceSnLength = buffer[5];
+            // 获取协议头部信息
+            byte[] headerBytes = IcDataPackUtils.getRange(buffer, 0, 10 + deviceSnLength);
+            Header header = engine.decode(headerBytes, Header.class);   // 包头
             log.info("Rcv request vehicle data！！！");
-            deviceManager.sendBackRunData(deviceInfo, 0);
+            deviceManager.sendBackRunData(deviceInfo, header.getCommandId(), 0);
         } else if (buffer[2] == 0x16) {        // 收到请求平台设置
             // 解析器
             ProtocolEngine engine = new ProtocolEngine();
