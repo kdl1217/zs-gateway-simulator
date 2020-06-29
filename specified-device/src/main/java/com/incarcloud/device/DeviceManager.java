@@ -51,7 +51,8 @@ public class DeviceManager {
     public void init() throws IOException {
         log.info("init device information ...");
 //        deviceMap.put("166222225621656",new DeviceInfo("166222225621656", "KEYTEST050", "TEST0000000000050")) ;
-        deviceMap.put("600000000000017",new DeviceInfo("600000000000017", "TBOXTEST013", "TESTSKT0000000001")) ;
+//        deviceMap.put("600000000000017",new DeviceInfo("600000000000017", "TBOXTEST013", "TESTSKT0000000001")) ;
+        deviceMap.put("867858032114004",new DeviceInfo("867858032114004", "KEYTEST04", "TESTWY00000000006")) ;
 
         if (readFile) {
             readProperties();
