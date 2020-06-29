@@ -52,7 +52,9 @@ public class DeviceManager {
         if (readFile) {
             readProperties();
         } else {
-            deviceMap.put("YK001912D4", new DeviceInfo("863576043319974", "YK001912D4", "LVGEN56A8JG257045"));
+            deviceMap.put("CS12123501", new DeviceInfo("100223049148801", "CS12123501", "CS123456202006295"));
+
+//            deviceMap.put("KEYTEST051", new DeviceInfo("867858032224872", "KEYTEST051", "TESTKDL0000000002"));
         }
 
     }
@@ -209,9 +211,9 @@ public class DeviceManager {
      * @param deviceInfo        设备信息
      * @param index             经纬度标记
      */
-    public void sendBackRunData(DeviceInfo deviceInfo, int index) {
+    public void sendBackRunData(DeviceInfo deviceInfo, long serialNumber, int index) {
         try {
-            byte[] runByte = deviceMessageFactory.generateRunByte(deviceInfo.getDeviceCode(), 1,
+            byte[] runByte = deviceMessageFactory.generateRunByte(deviceInfo.getDeviceCode(), serialNumber,
                     index, Constants.CommandId.RUN_BACK_CMD_FLAG, deviceInfo.getKey());
             sendMsg(deviceInfo.getDeviceId(), runByte);
         } catch (Exception e) {

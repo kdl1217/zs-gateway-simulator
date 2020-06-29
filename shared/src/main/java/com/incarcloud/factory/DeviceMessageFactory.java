@@ -1,6 +1,7 @@
 package com.incarcloud.factory;
 
 import com.github.io.protocol.core.ProtocolEngine;
+import com.github.io.protocol.utils.HexStringUtil;
 import com.incarcloud.boar.datapack.DataPackPosition;
 import com.incarcloud.boar.datapack.ic.model.*;
 import com.incarcloud.boar.datapack.ic.utils.IcDataPackUtils;
@@ -149,7 +150,7 @@ public final class DeviceMessageFactory {
      * @return      报文
      * @throws Exception        异常
      */
-    public byte[] generateRunByte(String deviceCode, int serialNumber, int index, int commandId, byte[] key) throws Exception {
+    public byte[] generateRunByte(String deviceCode, long serialNumber, int index, int commandId, byte[] key) throws Exception {
 
         // 对象数据
         OverviewData overviewData = new OverviewData();
@@ -205,7 +206,7 @@ public final class DeviceMessageFactory {
 
         overviewData.setSoc(20); // SOC
         overviewData.setSpeed(50); // 行驶记录速度 km/h
-        overviewData.setMileage(new byte[]{0, 20, 25}); // 车辆行驶里程
+        overviewData.setMileage(HexStringUtil.parseBytes("001450")); // 车辆行驶里程
         overviewData.setBatteryVoltage(12); // 蓄电池电压
         overviewData.setPowerCellVoltage(122); // 动力电池电压
         overviewData.setGnssSatelliteNumber(1); // GNSS卫星数量
