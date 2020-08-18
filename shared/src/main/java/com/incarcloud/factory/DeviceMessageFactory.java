@@ -114,14 +114,18 @@ public final class DeviceMessageFactory {
      * @return      报文
      * @throws Exception        异常
      */
-    public byte[] generateCheckByte(String deviceCode, Long serialNumber, byte[] key) throws Exception {
+    public byte[] generateCheckByte(String deviceCode, Long serialNumber, byte[] vehicleCode, byte[] key) throws Exception {
         CheckData checkData = new CheckData();
         checkData.setSoftwareVersionNo(new byte[]{0x03, 0x01, 0x07});
         checkData.setVinLength(0);
         checkData.setTelephoneLength(0);
         checkData.setBluetoothNameLength(0);
         checkData.setBluetoothMacLength(0);
-        checkData.setVehicleCode(new byte[]{0, 86, 19, 0});
+        if (null == vehicleCode) {
+            checkData.setVehicleCode(new byte[]{0, 86, 19, 0});
+        } else {
+            checkData.setVehicleCode(vehicleCode);
+        }
         checkData.setGatherTime(IcDataPackUtils.date2buf(Calendar.getInstance().getTimeInMillis())); // 时间戳
 
         byte[] byteData = this.engine.encode(checkData);
@@ -327,6 +331,47 @@ public final class DeviceMessageFactory {
     }
 
     /**
+     *  生成设备信息
+     * @param deviceCode            设备号
+     * @param serialNumber          流水号
+     * @param vehicleCode           车型编码
+     * @param key                   T-Box密钥
+     * @return      报文
+     * @throws Exception        异常
+     */
+    public byte[] generateDeviceInfo(String deviceCode, long serialNumber, byte[] vehicleCode, byte[] key) throws Exception {
+        DeviceData deviceData = new DeviceData();
+        deviceData.setSoftwareVersionNo(new byte[]{0x03, 0x03, 0x03});
+        deviceData.setVinLength(0);
+        deviceData.setVin(null);
+        deviceData.setTelephoneLength(11);
+        deviceData.setTelephone("1064899103098".getBytes());
+        deviceData.setBluetoothNameLength(4);
+        deviceData.setBluetoothName("Name".getBytes());
+        deviceData.setBluetoothMacLength(2);
+        deviceData.setBluetoothMac("Mc".getBytes());
+        deviceData.setVehicleCode(vehicleCode);
+        deviceData.setGatherTime(IcDataPackUtils.date2buf(Calendar.getInstance().getTimeInMillis()));
+
+        byte[] checkByte = engine.encode(deviceData);
+        IcPackage icPackage = new IcPackage();
+
+        int headerLength = checkByte.length + 12 + deviceCode.length();
+        Header header = getHeader(deviceCode, Constants.CommandId.DEVICE_CMD_FLAG, serialNumber, headerLength);
+
+        Tail tail = new Tail();
+        tail.setSideWord(13);
+
+        icPackage.setHeader(header);
+        icPackage.setBodyBuffer(checkByte);
+        icPackage.setTail(tail);
+
+        byte[] responseByte = this.engine.encode(icPackage);
+
+        return IcDataPackUtils.addCheck(responseByte, key);
+    }
+
+    /**
      *  生成平台设置
      * @param deviceCode            设备号
      * @param serialNumber          流水号
@@ -394,6 +439,12 @@ public final class DeviceMessageFactory {
 
         return IcDataPackUtils.addCheck(responseByte, key);
     }
+
+
+
+
+
+
 
     private Header getHeader(String deviceCode, int cmdFlag, long serialNumber, int length) {
         Header header = new Header();

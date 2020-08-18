@@ -2,6 +2,7 @@ package com.incarcloud.runner;
 
 import com.github.io.protocol.core.ProtocolEngine;
 import com.github.io.protocol.utils.HexStringUtil;
+import com.incarcloud.boar.datapack.ic.model.CommonRespData;
 import com.incarcloud.boar.datapack.ic.model.Header;
 import com.incarcloud.boar.datapack.ic.model.IcPackage;
 import com.incarcloud.boar.datapack.ic.utils.IcDataPackUtils;
@@ -172,6 +173,32 @@ public class Receiver {
             Header header = engine.decode(headerBytes, Header.class);   // 包头
             log.info("Rcv request platform set data！！！");
             deviceManager.sendPlatFormData(deviceInfo, header.getCommandId());
+        } else if (buffer[2] == 0x13) {        // 收到请求设备信息
+            // 解析器
+            ProtocolEngine engine = new ProtocolEngine();
+            // 设备长度
+            int deviceSnLength = buffer[5];
+            // 获取协议头部信息
+            byte[] headerBytes = IcDataPackUtils.getRange(buffer, 0, 10 + deviceSnLength);
+            Header header = engine.decode(headerBytes, Header.class);
+            log.info("Rcv request device data！！！");
+            deviceManager.sendDeviceData(deviceInfo, header.getCommandId());
+        } else if ("EE".equals(HexStringUtil.toHexString(buffer[2]))) {
+            Integer index = deviceManager.getInitMap().get(deviceInfo.getDeviceId());
+            if (null != index && 0 == index) {
+                // 解析器
+                ProtocolEngine engine = new ProtocolEngine();
+                IcPackage icPackage = engine.decode(buffer, IcPackage.class);
+                // 数据单元
+                byte[] dataBuffer = icPackage.getBodyBuffer();
+                CommonRespData respData = engine.decode(dataBuffer, CommonRespData.class);
+                if (respData.getResult() != 0) {
+                    // 设置重新发送上线校验
+                    deviceManager.getIndexMap().put(deviceInfo.getDeviceId(), index);
+                    deviceManager.getVehicleCodeMap().put(deviceInfo.getDeviceId(), respData.getError());
+                }
+                deviceManager.getInitMap().put(deviceInfo.getDeviceId(), 1);
+            }
         }
         log.info("send deviceId : {} <--  {}", deviceInfo.getDeviceId(), HexStringUtil.toHexString(buffer));
     }

@@ -1,6 +1,9 @@
 package com.incarcloud.device;
 
+import com.github.io.protocol.core.ProtocolEngine;
 import com.github.io.protocol.utils.HexStringUtil;
+import com.incarcloud.boar.datapack.ic.model.DeviceData;
+import com.incarcloud.boar.datapack.ic.model.IcPackage;
 import com.incarcloud.entity.DeviceInfo;
 import com.incarcloud.factory.DeviceMessageFactory;
 import com.incarcloud.share.Constants;
@@ -52,9 +55,9 @@ public class DeviceManager {
         if (readFile) {
             readProperties();
         } else {
-            deviceMap.put("CS12123501", new DeviceInfo("100223049148801", "CS12123501", "CS123456202006295"));
+//            deviceMap.put("YK001912D4", new DeviceInfo("867852139722605", "YK001912D4", "CS123456789012345"));
 
-//            deviceMap.put("KEYTEST051", new DeviceInfo("867858032224872", "KEYTEST051", "TESTKDL0000000002"));
+            deviceMap.put("YK001912D4", new DeviceInfo("863576043319974", "YK001912D4", "LVGEN56A8JG257045"));
         }
 
     }
@@ -89,6 +92,24 @@ public class DeviceManager {
 
     public Map<String, Integer> getIndexMap() {
         return indexMap;
+    }
+
+    /**
+     * 初始化集合, 是否第一次发送
+     */
+    private Map<String, Integer> initMap = new ConcurrentHashMap<>();
+
+    public Map<String, Integer> getInitMap() {
+        return initMap;
+    }
+
+    /**
+     * 车型编码集合
+     */
+    private Map<String, byte[]> vehicleCodeMap = new ConcurrentHashMap<>();
+
+    public Map<String, byte[]> getVehicleCodeMap() {
+        return vehicleCodeMap;
     }
 
     /**
@@ -184,7 +205,15 @@ public class DeviceManager {
     public void sendCheckData(DeviceInfo deviceInfo, long serialNumber) {
         try {
             byte[] checkByte = deviceMessageFactory.generateCheckByte(deviceInfo.getDeviceCode(),
-                    serialNumber, deviceInfo.getKey());
+                    serialNumber, this.vehicleCodeMap.get(deviceInfo.getDeviceId()), deviceInfo.getKey());
+            // 解析器
+            ProtocolEngine engine = new ProtocolEngine();
+            IcPackage icPackage = engine.decode(checkByte, IcPackage.class);
+            // 数据单元
+            byte[] dataBuffer = icPackage.getBodyBuffer();
+            DeviceData deviceData = engine.decode(dataBuffer, DeviceData.class);
+            this.vehicleCodeMap.put(deviceInfo.getDeviceId(), deviceData.getVehicleCode());
+            this.initMap.put(deviceInfo.getDeviceId(), 0);
             sendMsg(deviceInfo.getDeviceId(), checkByte);
         } catch (Exception e) {
             e.printStackTrace();
@@ -247,6 +276,21 @@ public class DeviceManager {
         try {
             byte[] commonByte = deviceMessageFactory.generateCommon(signalFlag, deviceInfo.getDeviceCode(),
                     serialNumber, status, deviceInfo.getKey());
+            sendMsg(deviceInfo.getDeviceId(), commonByte);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 发送平台设置数据
+     * @param deviceInfo        设备信息
+     * @param serialNumber      流水号
+     */
+    public void sendDeviceData(DeviceInfo deviceInfo, long serialNumber) {
+        try {
+            byte[] commonByte = deviceMessageFactory.generateDeviceInfo(deviceInfo.getDeviceCode(),
+                    serialNumber, this.vehicleCodeMap.get(deviceInfo.getDeviceId()), deviceInfo.getKey());
             sendMsg(deviceInfo.getDeviceId(), commonByte);
         } catch (Exception e) {
             e.printStackTrace();

@@ -32,6 +32,10 @@ public interface Constants {
          */
         int ALARM_CMD_FLAG = 0x34;
         /**
+         * 获取设备信息
+         */
+        int DEVICE_CMD_FLAG = 0x61;
+        /**
          * 获取平台设置
          */
         int PLAT_SET_FLAG = 0x64;

@@ -40,7 +40,7 @@ allprojects {
         }
 
         dependencies {
-            dependency "com.incarcloud:boar-datapack-ic:1.2-SNAPSHOT"
+            dependency "com.incarcloud:boar-datapack-ic:1.3-SNAPSHOT"
 
             dependency "com.alibaba:fastjson:1.2.68"
             dependency "com.alibaba:druid-spring-boot-starter:1.1.22"
