@@ -344,7 +344,7 @@ public final class DeviceMessageFactory {
         deviceData.setSoftwareVersionNo(new byte[]{0x03, 0x03, 0x03});
         deviceData.setVinLength(0);
         deviceData.setVin(null);
-        deviceData.setTelephoneLength(11);
+        deviceData.setTelephoneLength(13);
         deviceData.setTelephone("1064899103098".getBytes());
         deviceData.setBluetoothNameLength(4);
         deviceData.setBluetoothName("Name".getBytes());
