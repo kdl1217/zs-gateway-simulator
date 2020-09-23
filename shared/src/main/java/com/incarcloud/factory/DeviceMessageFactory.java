@@ -211,7 +211,7 @@ public final class DeviceMessageFactory {
         overviewData.setSoc(20); // SOC
         overviewData.setSpeed(50); // 行驶记录速度 km/h
         overviewData.setMileage(HexStringUtil.parseBytes("001450")); // 车辆行驶里程
-        overviewData.setBatteryVoltage(12); // 蓄电池电压
+        overviewData.setBatteryVoltage(0xE1); // 蓄电池电压
         overviewData.setPowerCellVoltage(122); // 动力电池电压
         overviewData.setGnssSatelliteNumber(1); // GNSS卫星数量
         overviewData.setGnssChannelNumber(1); // GNSS通道数量
@@ -229,8 +229,12 @@ public final class DeviceMessageFactory {
         overviewData.setDynamicalFuel(15.5D); // 瞬时油耗【单位：0.1L/100KM】
         overviewData.setAvgOilUsed(8.5D); // 平均油耗【单位：0.1L/100KM】
 
+        OverviewDataE1 overviewDataE1 = new OverviewDataE1();
+        overviewDataE1.setAccurateBatteryVoltage(11.8);
+        overviewDataE1.setIckStatus(1);
+        overviewDataE1.setOverviewData(overviewData);
 
-        byte[] byteData = this.engine.encode(overviewData);
+        byte[] byteData = this.engine.encode(overviewDataE1);
         IcPackage icPackage = new IcPackage();
 
         int length = byteData.length + 12 + deviceCode.length();
@@ -344,8 +348,9 @@ public final class DeviceMessageFactory {
         deviceData.setSoftwareVersionNo(new byte[]{0x03, 0x03, 0x03});
         deviceData.setVinLength(0);
         deviceData.setVin(null);
-        deviceData.setTelephoneLength(13);
-        deviceData.setTelephone("1064899103098".getBytes());
+        String tel = "1064899103098";
+        deviceData.setTelephoneLength(tel.length());
+        deviceData.setTelephone(tel.getBytes());
         deviceData.setBluetoothNameLength(4);
         deviceData.setBluetoothName("Name".getBytes());
         deviceData.setBluetoothMacLength(2);
@@ -439,12 +444,6 @@ public final class DeviceMessageFactory {
 
         return IcDataPackUtils.addCheck(responseByte, key);
     }
-
-
-
-
-
-
 
     private Header getHeader(String deviceCode, int cmdFlag, long serialNumber, int length) {
         Header header = new Header();
