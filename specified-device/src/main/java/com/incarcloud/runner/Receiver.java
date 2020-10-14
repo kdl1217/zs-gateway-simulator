@@ -196,8 +196,9 @@ public class Receiver {
                     // 设置重新发送上线校验
                     deviceManager.getIndexMap().put(deviceInfo.getDeviceId(), index);
                     deviceManager.getVehicleCodeMap().put(deviceInfo.getDeviceId(), respData.getError());
+                } else {
+                    deviceManager.getInitMap().put(deviceInfo.getDeviceId(), 1);
                 }
-                deviceManager.getInitMap().put(deviceInfo.getDeviceId(), 1);
             }
         }
         log.info("send deviceId : {} <--  {}", deviceInfo.getDeviceId(), HexStringUtil.toHexString(buffer));
