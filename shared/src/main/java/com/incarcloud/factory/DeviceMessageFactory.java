@@ -416,12 +416,12 @@ public final class DeviceMessageFactory {
 
         // 默认密钥
         if (StringUtils.isNotBlank(smartSecret)) {
-            platformSetData.setSmartSecretLength(smartSecret.length());
-            platformSetData.setSmartSecret(smartSecret.getBytes());
+            byte[] secretBytes = IcDataPackUtils.strToBcd(smartSecret);
+            platformSetData.setSmartSecretLength(secretBytes.length);
+            platformSetData.setSmartSecret(secretBytes);
         } else {
             platformSetData.setSmartSecretLength(0);
         }
-
         byte[] byteData = this.engine.encode(platformSetData);
 
         byte[] bytes = new byte[numberByte.length + byteData.length];
