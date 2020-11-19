@@ -5,9 +5,11 @@ import com.github.io.protocol.utils.HexStringUtil;
 import com.incarcloud.boar.datapack.ic.model.CommonRespData;
 import com.incarcloud.boar.datapack.ic.model.Header;
 import com.incarcloud.boar.datapack.ic.model.IcPackage;
+import com.incarcloud.boar.datapack.ic.model.KeyboardData;
 import com.incarcloud.boar.datapack.ic.utils.IcDataPackUtils;
 import com.incarcloud.device.DeviceManager;
 import com.incarcloud.entity.DeviceInfo;
+import com.incarcloud.entity.KeyboardValue;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -70,7 +72,7 @@ public class Receiver {
      */
     public void sendCommand(DeviceInfo deviceInfo, byte[] buffer) throws Exception {
 
-        if (buffer[2] == 0x07 || buffer[2] == 0x08 || buffer[2] == 0x03) {
+        if (buffer[2] == 0x07 || buffer[2] == 0x08 || buffer[2] == 0x03 || buffer[2] == 0x1A) {
             // 解析器
             ProtocolEngine engine = new ProtocolEngine();
             // 设备长度
@@ -86,13 +88,23 @@ public class Receiver {
                     // 解析下发的433指令
                     try {
                         IcPackage icPackage = engine.decode(buffer, IcPackage.class);
-                        String secret = new String(icPackage.getBodyBuffer());
+                        String secret = HexStringUtil.toHexString(icPackage.getBodyBuffer());
                         deviceManager.getSecretMap().put(deviceInfo.getDeviceId(), secret);
                     } catch (Exception e) {
                         log.error("decode error", e);
                     }
                 }
                 log.info("*******************Rcv 433M command****** deviceId : {} <--  {}",
+                        deviceInfo.getDeviceId(), HexStringUtil.toHexString(buffer));
+            } else if (buffer[2] == 0x1A) {
+                // 解析下发的设置按键指令
+                try {
+                    KeyboardData keyboardData = engine.decode(buffer, KeyboardData.class);
+                    deviceManager.getKeyboardValueMap().put(deviceInfo.getDeviceId(), new KeyboardValue(keyboardData));
+                } catch (Exception e) {
+                    log.error("decode error", e);
+                }
+                log.info("*******************Rcv Keyboard command****** deviceId : {} <--  {}",
                         deviceInfo.getDeviceId(), HexStringUtil.toHexString(buffer));
             } else {
                 if (buffer[2] == 0x07) {           // 控车 指令
@@ -140,7 +152,6 @@ public class Receiver {
                     if (icPackage.getBodyBuffer()[6] == 2) { // 空调 - 关
                         msg += "关空调,";
                     }
-
 //                                        Thread.sleep(10000);
 
                     log.info("收到{}指令，远控返回成功。deviceId : {} <--  {}",
@@ -173,7 +184,8 @@ public class Receiver {
             Header header = engine.decode(headerBytes, Header.class);   // 包头
             log.info("Rcv request platform set data！！！");
             deviceManager.sendPlatFormData(deviceInfo, header.getCommandId());
-        } else if (buffer[2] == 0x13) {        // 收到请求设备信息
+        } else if (buffer[2] == 0x13) {
+            // 收到请求设备信息
             // 解析器
             ProtocolEngine engine = new ProtocolEngine();
             // 设备长度
@@ -183,6 +195,17 @@ public class Receiver {
             Header header = engine.decode(headerBytes, Header.class);
             log.info("Rcv request device data！！！");
             deviceManager.sendDeviceData(deviceInfo, header.getCommandId());
+        } else if (buffer[2] == 0x1B) {
+            // 收到获取按键功能
+            // 解析器
+            ProtocolEngine engine = new ProtocolEngine();
+            // 设备长度
+            int deviceSnLength = buffer[5];
+            // 获取协议头部信息
+            byte[] headerBytes = IcDataPackUtils.getRange(buffer, 0, 10 + deviceSnLength);
+            Header header = engine.decode(headerBytes, Header.class);
+            log.info("Rcv request keyboard data！！！");
+            deviceManager.sendKeyboardData(deviceInfo, header.getCommandId());
         } else if ("EE".equals(HexStringUtil.toHexString(buffer[2]))) {
             Integer index = deviceManager.getInitMap().get(deviceInfo.getDeviceId());
             if (null != index && 0 == index) {
@@ -203,5 +226,6 @@ public class Receiver {
         }
         log.info("send deviceId : {} <--  {}", deviceInfo.getDeviceId(), HexStringUtil.toHexString(buffer));
     }
+
 
 }

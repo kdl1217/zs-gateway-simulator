@@ -39,6 +39,10 @@ public interface Constants {
          * 获取平台设置
          */
         int PLAT_SET_FLAG = 0x64;
+        /**
+         * 按键设置
+         */
+        int KEY_BOARD_SET = 0x42;
     }
 
 

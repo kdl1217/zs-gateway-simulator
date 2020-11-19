@@ -5,6 +5,7 @@ import com.github.io.protocol.utils.HexStringUtil;
 import com.incarcloud.boar.datapack.ic.model.DeviceData;
 import com.incarcloud.boar.datapack.ic.model.IcPackage;
 import com.incarcloud.entity.DeviceInfo;
+import com.incarcloud.entity.KeyboardValue;
 import com.incarcloud.factory.DeviceMessageFactory;
 import com.incarcloud.share.Constants;
 import lombok.extern.log4j.Log4j2;
@@ -56,8 +57,11 @@ public class DeviceManager {
             readProperties();
         } else {
 //            deviceMap.put("YK001912D4", new DeviceInfo("867852139722605", "YK001912D4", "CS123456789012345"));
+            // 25
+//            deviceMap.put("YK001912D4", new DeviceInfo("863576043319974", "YK001912D4", "LVGEN56A8JG257045"));
+            // 开发环境
+            deviceMap.put("CTTTEST01", new DeviceInfo("66666666666666666", "CTTTEST01", "TESTCT00000000001"));
 
-            deviceMap.put("YK001912D4", new DeviceInfo("863576043319974", "YK001912D4", "LVGEN56A8JG257045"));
         }
 
     }
@@ -119,6 +123,12 @@ public class DeviceManager {
 
     public Map<String, String> getSecretMap() {
         return secretMap;
+    }
+
+    private Map<String, KeyboardValue> keyboardValueMap = new ConcurrentHashMap<>();
+
+    public Map<String, KeyboardValue> getKeyboardValueMap() {
+        return keyboardValueMap;
     }
 
     /**
@@ -306,6 +316,21 @@ public class DeviceManager {
         try {
             byte[] commonByte = deviceMessageFactory.generatePlatformSet(deviceInfo.getDeviceCode(),
                     serialNumber, secretMap.get(deviceInfo.getDeviceId()), deviceInfo.getKey());
+            sendMsg(deviceInfo.getDeviceId(), commonByte);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 发送按键设置数据
+     * @param deviceInfo        设备信息
+     * @param serialNumber      流水号
+     */
+    public void sendKeyboardData(DeviceInfo deviceInfo, long serialNumber) {
+        try {
+            byte[] commonByte = deviceMessageFactory.generateKeyboard(deviceInfo.getDeviceCode(),
+                    keyboardValueMap.get(deviceInfo.getDeviceId()), serialNumber, deviceInfo.getKey());
             sendMsg(deviceInfo.getDeviceId(), commonByte);
         } catch (Exception e) {
             e.printStackTrace();

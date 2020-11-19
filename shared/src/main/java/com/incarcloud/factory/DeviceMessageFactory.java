@@ -5,6 +5,7 @@ import com.github.io.protocol.utils.HexStringUtil;
 import com.incarcloud.boar.datapack.DataPackPosition;
 import com.incarcloud.boar.datapack.ic.model.*;
 import com.incarcloud.boar.datapack.ic.utils.IcDataPackUtils;
+import com.incarcloud.entity.KeyboardValue;
 import com.incarcloud.share.Constants;
 import org.apache.commons.lang3.StringUtils;
 
@@ -443,6 +444,43 @@ public final class DeviceMessageFactory {
         byte[] responseByte = this.engine.encode(icPackage);
 
         return IcDataPackUtils.addCheck(responseByte, key);
+    }
+
+    /**
+     * 生成按键获取指令
+     * @param deviceCode        设备编码
+     * @param keyboardValue     按键值
+     * @param serialNumber      流水号
+     * @param key               密钥KEY
+     * @return  报文
+     * @throws Exception    生成报文异常
+     */
+    public byte[] generateKeyboard(String deviceCode, KeyboardValue keyboardValue, long serialNumber, byte[] key) throws Exception {
+        if (null == keyboardValue) {
+            keyboardValue = new KeyboardValue().init();
+        }
+
+        KeyboardData keyboardData = new KeyboardData();
+        keyboardData.setClickPadlock(keyboardValue.getClickPadlock());
+        keyboardData.setClickTrunk(keyboardValue.getClickTrunk());
+        keyboardData.setClickUnlock(keyboardValue.getClickUnlock());
+        keyboardData.setDoubleClickPadlock(keyboardValue.getDoubleClickPadlock());
+        keyboardData.setDoubleClickTrunk(keyboardValue.getDoubleClickTrunk());
+        keyboardData.setDoubleClickUnlock(keyboardValue.getDoubleClickUnlock());
+        keyboardData.setLongPressPadlock(keyboardValue.getLongPressPadlock());
+        keyboardData.setLongPressTrunk(keyboardValue.getLongPressTrunk());
+        keyboardData.setLongPressUnlock(keyboardValue.getLongPressUnlock());
+
+        int headerLength = 9 + 12 + deviceCode.length();
+        Header header = getHeader(deviceCode, Constants.CommandId.KEY_BOARD_SET, serialNumber, headerLength);
+
+        Tail tail = new Tail();
+        tail.setSideWord(13);
+
+        keyboardData.setHeader(header);
+        keyboardData.setTail(tail);
+
+        return IcDataPackUtils.addCheck(engine.encode(keyboardData), key);
     }
 
     private Header getHeader(String deviceCode, int cmdFlag, long serialNumber, int length) {

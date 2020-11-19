@@ -33,7 +33,7 @@ public class Sender {
         log.info("simulator sender running ...");
 
         // 定时30S
-        int period = 30;
+        int period = 10;
 
         // 执行任务
         scheduledExecutorService.scheduleAtFixedRate(
